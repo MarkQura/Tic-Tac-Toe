@@ -31,3 +31,4 @@ X = pygame.transform.scale(pygame.image.load(
     'assets/fotoX.png'), (170, 160))
 
 ICON = pygame.image.load('assets/images.png')
+

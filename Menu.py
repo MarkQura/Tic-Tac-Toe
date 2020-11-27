@@ -9,6 +9,8 @@ from game.game import Game
 from tkinter import *
 import time
 
+pygame.mixer.init()
+pygame.mixer.music.set_volume(0.1)
 screen_width, screen_height = pyautogui.size()  # vê o tamanho do ecrã
 # descobre a posição onde tem de criar
 pos_x = screen_width / 2 - WIDTH / 2
@@ -43,6 +45,32 @@ def popUpMsg(message, win, text):
     mainloop()
 
 
+def pauseMsg(message, win, text):
+    global root
+    root = Tk()
+    root.title('pause')
+    x, y = win.get_size()
+    root.geometry(f'+{x+300}+{y-20}')
+    m = message
+    m += '\n'
+    w = Label(root, text=m, width=40, height=5)
+    w.pack()
+    Button(root, text=text,
+           command=root.destroy, width=10).place(x=10, y=48)
+    Button(root, text='main menu',
+           command=back, width=10).place(x=195, y=48)
+    Button(root, text='recomeçar',
+           command=reset, width=10).place(x=103, y=48)
+
+    mainloop()
+
+
+def reset():
+    root.destroy()
+    game.reset()
+    game.update()
+
+
 def back():
     root.destroy()
     game.reset()
@@ -56,46 +84,35 @@ def getRowColFromMouse(pos):
     return row, col
 
 
+def getWinner():
+    game.update()
+
+    # vê se alguém ganhou e cria uma janela a dizer o jogador que ganhou
+    if game.winner():
+        if game.Winner == 2:
+            popUpMsg('Circle Won!', WIN, 'restart')
+
+        else:
+            popUpMsg('Cross Won!', WIN, 'restart')
+
+        game.reset()
+
+    elif game.board.board[1].count(0) + game.board.board[0].count(0) + game.board.board[2].count(0) == 0:
+        popUpMsg('It\'s a tie', WIN, 'restart')
+        game.reset()
+
+
 def game_loop(AI=False, dif=1):
     try:
         run = True
         pause = False
+        clock.tick(FPS)  # define a velocidade do jogo
 
         # corre enquanto o jogo estiver aberto
         while run:
-            clock.tick(FPS)  # define a velocidade do jogo
-
-            # vê se alguém ganhou e cria uma janela a dizer o jogador que ganhou
-            if game.winner():
-                if game.Winner == 2:
-                    popUpMsg('Circle Won!', WIN, 'restart')
-
-                else:
-                    popUpMsg('Cross Won!', WIN, 'restart')
-
-                game.reset()
-
-            elif game.board.board[1].count(0) + game.board.board[0].count(0) + game.board.board[2].count(0) == 0:
-                popUpMsg('It\'s a tie', WIN, 'restart')
-                game.reset()
-
-            if AI and game.turn == 2 and dif == 1:
-                row, col = positi(0, 1, 0)
-                game.create(row, col, AI)
-
-            elif AI and game.turn == 2 and dif == 2:
-                eval, row, col = minimaxMed(4, True)
-                game.create(row, col, AI)
-
-            elif AI and game.turn == 2 and dif == 3:
-                eval, row, col = minimaxAB(0, -10, 10, True)
-                game.create(row, col, AI)
 
             # observa eventos e guarda-os numa lista
             for event in pygame.event.get():  # for event in pygame.event.get():
-                # se for um evento de fechar o programa para o while
-                if event.type == pygame.QUIT:
-                    run = False
 
                 if not pause:
                     if not AI:
@@ -104,6 +121,7 @@ def game_loop(AI=False, dif=1):
                             pos = pygame.mouse.get_pos()
                             row, col = getRowColFromMouse(pos)
                             game.create(row, col)
+                            getWinner()
 
                     if AI and game.turn == 1:
                         # se for um evento de clicar na tela cria uma peça de X ou O dependendo do jogador que selecionou
@@ -111,13 +129,32 @@ def game_loop(AI=False, dif=1):
                             pos = pygame.mouse.get_pos()
                             row, col = getRowColFromMouse(pos)
                             game.create(row, col, AI)
+                            getWinner()
 
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_SPACE:
                         pause = not pause
 
+                if event.type == pygame.QUIT:
+                    run = False
+
+            if AI and game.turn == 2 and dif == 1:
+                row, col = positi(0, 1, 0)
+                game.create(row, col, AI)
+                getWinner()
+
+            elif AI and game.turn == 2 and dif == 2:
+                eval, row, col = minimaxMed(4, True)
+                game.create(row, col, AI)
+                getWinner()
+
+            elif AI and game.turn == 2 and dif == 3:
+                eval, row, col = minimaxAB(0, -10, 10, True)
+                game.create(row, col, AI)
+                getWinner()
+
             if pause:
-                popUpMsg('Pause menu', WIN, 'continue')
+                pauseMsg('Pause menu', WIN, 'continue')
                 pause = not pause
 
             game.update()  # atualiza todos os objetos no ecrã
@@ -185,6 +222,9 @@ def main_menu():
         dif = 1
         intro = True
         pygame.font.init()
+        pygame.mixer.music.load('assets/Flower Garden - Yoshi\'s Island.mp3')
+        pygame.mixer.music.queue('assets/Flower Garden - Yoshi\'s Island.mp3')
+        pygame.mixer.music.play(-1)
 
         while intro:
             predif = dif
@@ -256,6 +296,28 @@ def main_menu():
             pygame.display.update()
             if dif != predif:
                 time.sleep(0.5)
+                if dif == 1:
+                    pygame.mixer.stop()
+                    pygame.mixer.music.load(
+                        'assets/Flower Garden - Yoshi\'s Island.mp3')
+                    pygame.mixer.music.queue(
+                        'assets/Flower Garden - Yoshi\'s Island.mp3')
+                    pygame.mixer.music.play(-1)
+
+                elif dif == 2:
+                    pygame.mixer.stop()
+                    pygame.mixer.music.load(
+                        'assets/Night of Nights (Flowering nights remix) By COOL&CREATEBeatMARIO.mp3')
+                    pygame.mixer.music.queue(
+                        'assets/Night of Nights (Flowering nights remix) By COOL&CREATEBeatMARIO.mp3')
+                    pygame.mixer.music.play(-1)
+                elif dif == 3:
+                    pygame.mixer.stop()
+                    pygame.mixer.music.load(
+                        'assets/Metal Gear Rising Revengeance Vocal Tracks - The Stains of Time [Instrumental].mp3')
+                    pygame.mixer.music.queue(
+                        'assets/Metal Gear Rising Revengeance Vocal Tracks - The Stains of Time [Instrumental].mp3')
+                    pygame.mixer.music.play(-1)
 
             clock.tick(15)
 
