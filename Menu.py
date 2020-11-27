@@ -138,20 +138,22 @@ def game_loop(AI=False, dif=1):
                 if event.type == pygame.QUIT:
                     run = False
 
-            if AI and game.turn == 2 and dif == 1:
-                row, col = positi(0, 1, 0)
-                game.create(row, col, AI)
-                getWinner()
+            if AI:
+                if game.turn == 2:
+                    if dif == 1:
+                        row, col = positi(0, 1, 0)
+                        game.create(row, col, AI)
+                        getWinner()
 
-            elif AI and game.turn == 2 and dif == 2:
-                eval, row, col = minimaxMed(4, True)
-                game.create(row, col, AI)
-                getWinner()
+                    elif dif == 2:
+                        eval, row, col = minimaxMed(4, True)
+                        game.create(row, col, AI)
+                        getWinner()
 
-            elif AI and game.turn == 2 and dif == 3:
-                eval, row, col = minimaxAB(0, -10, 10, True)
-                game.create(row, col, AI)
-                getWinner()
+                    elif dif == 3:
+                        eval, row, col = minimaxAB(0, -10, 10, True)
+                        game.create(row, col, AI)
+                        getWinner()
 
             if pause:
                 pauseMsg('Pause menu', WIN, 'continue')
