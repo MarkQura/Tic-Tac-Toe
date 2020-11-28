@@ -24,11 +24,10 @@ MICRO_BW = 30
 MICRO_BH = 18
 
 IMG = pygame.transform.scale(pygame.image.load(
-    'assets/wall-murals-play-the-game-tic-tac-toe-with-red-and-black-sign.jpg.jpg'), (WIDTH, HEIGHT))
+    'assets/wall-murals.jpg'), (WIDTH, HEIGHT))
 
 # importar a imagem do X para o jogo
 X = pygame.transform.scale(pygame.image.load(
     'assets/fotoX.png'), (170, 160))
 
 ICON = pygame.image.load('assets/images.png')
-

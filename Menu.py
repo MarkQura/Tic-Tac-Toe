@@ -30,7 +30,7 @@ game = Game(WIN)
 def popUpMsg(message, win, text):
     global root
     root = Tk()
-    root.title('winner')
+    root.title('Vencedor')
     x, y = win.get_size()
     root.geometry(f'+{x+345}+{y-20}')
     m = message
@@ -39,7 +39,7 @@ def popUpMsg(message, win, text):
     w.pack()
     Button(root, text=text,
            command=root.destroy, width=10).place(x=20, y=48)
-    Button(root, text='main menu',
+    Button(root, text='menu inicial',
            command=back, width=10).place(x=115, y=48)
 
     mainloop()
@@ -48,7 +48,7 @@ def popUpMsg(message, win, text):
 def pauseMsg(message, win, text):
     global root
     root = Tk()
-    root.title('pause')
+    root.title('Pausa')
     x, y = win.get_size()
     root.geometry(f'+{x+300}+{y-20}')
     m = message
@@ -57,7 +57,7 @@ def pauseMsg(message, win, text):
     w.pack()
     Button(root, text=text,
            command=root.destroy, width=10).place(x=10, y=48)
-    Button(root, text='main menu',
+    Button(root, text='menu inicial',
            command=back, width=10).place(x=195, y=48)
     Button(root, text='recomeçar',
            command=reset, width=10).place(x=103, y=48)
@@ -90,15 +90,15 @@ def getWinner():
     # vê se alguém ganhou e cria uma janela a dizer o jogador que ganhou
     if game.winner():
         if game.Winner == 2:
-            popUpMsg('Circle Won!', WIN, 'restart')
+            popUpMsg('O circulo ganhou!', WIN, 'recomeçar')
 
         else:
-            popUpMsg('Cross Won!', WIN, 'restart')
+            popUpMsg('A cruz ganhou', WIN, 'recomeçar')
 
         game.reset()
 
     elif game.board.board[1].count(0) + game.board.board[0].count(0) + game.board.board[2].count(0) == 0:
-        popUpMsg('It\'s a tie', WIN, 'restart')
+        popUpMsg('É um empate', WIN, 'recomeçar')
         game.reset()
 
 
@@ -156,7 +156,7 @@ def game_loop(AI=False, dif=1):
                         getWinner()
 
             if pause:
-                pauseMsg('Pause menu', WIN, 'continue')
+                pauseMsg('Menu pausa', WIN, 'continuar')
                 pause = not pause
 
             game.update()  # atualiza todos os objetos no ecrã
@@ -293,7 +293,7 @@ def main_menu():
                     dif = change(dif, False)
 
             button(DARK_RED, RED, WIDTH//2 - SMALL_BW//2, 400, SMALL_BW, SMALL_BH,
-                   'Quit', BLACK, quitGame)
+                   'Fechar', BLACK, quitGame)
 
             pygame.display.update()
             if dif != predif:
